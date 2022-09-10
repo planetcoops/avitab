@@ -252,8 +252,8 @@ std::string AirportApp::toRunwayInfo(std::shared_ptr<xdata::Airport> airport) {
 }
 
 std::string AirportApp::toWeatherInfo(std::shared_ptr<xdata::Airport> airport) {
-    const auto &timestamp = airport->getMetarTimestamp();
     const auto &metar = airport->getMetarString();
+    const auto &timestamp = airport->getMetarTimestamp();
 
     if (metar.empty()) {
         return "No weather information available";

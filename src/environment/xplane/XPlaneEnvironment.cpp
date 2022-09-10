@@ -15,6 +15,7 @@
  *   You should have received a copy of the GNU Affero General Public License
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include <winsock2.h>
 #include <XPLM/XPLMPlugin.h>
 #include <XPLM/XPLMPlanes.h>
 #include <XPLM/XPLMScenery.h>

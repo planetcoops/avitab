@@ -24,6 +24,7 @@
 #include <vector>
 #include <set>
 #include <functional>
+#include "src/charts/RESTClient.h"
 #include "src/libxdata/world/models/Region.h"
 #include "src/libxdata/world/models/Frequency.h"
 #include "src/libxdata/world/models/Location.h"
@@ -69,7 +70,7 @@ public:
     const std::string& getName() const;
     const std::vector<Frequency> &getATCFrequencies(ATCFrequency type);
     const std::string &getMetarTimestamp() const;
-    const std::string &getMetarString() const;
+    const std::string getMetarString();
 
     void addRunway(std::shared_ptr<Runway> rwy);
     void forEachRunway(std::function<void(const std::shared_ptr<Runway>)> f) const;
@@ -106,6 +107,7 @@ private:
     Location locationUpLeft;
     Location locationDownRight;
     int elevation = 0; // feet AMSL
+    apis::RESTClient restClient;
 
     // Optional
     std::shared_ptr<Region> region;
@@ -123,6 +125,7 @@ private:
     std::string metarTimestamp, metarString;
 
     std::shared_ptr<Runway> getRunwayAndFixName(const std::string &name);
+	std::string replaceInHg(const std::string &metar);
 };
 
 } /* namespace xdata */

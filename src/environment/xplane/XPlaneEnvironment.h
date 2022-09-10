@@ -17,7 +17,7 @@
  */
 #ifndef SRC_ENVIRONMENT_XPLANE_XPLANEENVIRONMENT_H_
 #define SRC_ENVIRONMENT_XPLANE_XPLANEENVIRONMENT_H_
-
+#include <winsock2.h>
 #include <XPLM/XPLMMenus.h>
 #include <XPLM/XPLMUtilities.h>
 #include <XPLM/XPLMProcessing.h>

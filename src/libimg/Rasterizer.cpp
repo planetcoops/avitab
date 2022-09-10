@@ -139,6 +139,7 @@ std::unique_ptr<Image> Rasterizer::loadTile(int page, int x, int y, int zoom, bo
     int outHeight = image->getHeight();
 
     float scale = zoomToScale(zoom);
+	fz_set_aa_level(ctx, 8);
 
     fz_irect clipBox;
     clipBox.x0 = outStartX;
@@ -150,10 +151,11 @@ std::unique_ptr<Image> Rasterizer::loadTile(int page, int x, int y, int zoom, bo
     fz_try(ctx) {
         uint8_t *outBuf = (uint8_t *) image->getPixels();
         pix = fz_new_pixmap_with_data(ctx, fz_device_bgr(ctx), outWidth, outHeight, nullptr, 1, outWidth * 4, outBuf);
+		fz_set_pixmap_resolution(ctx, pix, 200, 200);		
         pix->x = clipBox.x0;
         pix->y = clipBox.y0;
-        pix->xres = 72; // fz_bound_page returned pixels with 72 dpi
-        pix->yres = 72;
+        //pix->xres = 72; // fz_bound_page returned pixels with 72 dpi
+        //pix->yres = 72;
     } fz_catch(ctx) {
         throw std::runtime_error("Couldn't create pixmap: " + std::string(fz_caught_message(ctx)));
     }

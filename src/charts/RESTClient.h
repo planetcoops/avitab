@@ -47,6 +47,7 @@ public:
     void setBasicAuth(const std::string &basic);
     void setBearer(const std::string &token);
     std::string get(const std::string &url, bool &cancel);
+    std::string get(const std::string &url, bool &cancel, long timeout);	
     std::vector<uint8_t> getBinary(const std::string &url, bool &cancel);
     std::string post(const std::string &url, const std::map<std::string, std::string> fields, bool &cancel);
     std::string getRedirect(const std::string &url, bool &cancel);
@@ -56,6 +57,7 @@ private:
     std::string referrer;
     std::string bearer;
     std::string basicAuth;
+	long timeout = 0L;
 
     CURL *createCURL(const std::string &url, bool &cancel);
     std::string toPOSTString(const std::map<std::string, std::string> fields);

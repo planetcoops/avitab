@@ -15,10 +15,14 @@
  *   You should have received a copy of the GNU Affero General Public License
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include <iostream>
+#include <iomanip>
+#include <ctime>
 #include <algorithm>
 #include <cstdlib>
 #include <cmath>
 #include <stdexcept>
+#include <regex>
 #include "Airport.h"
 #include "src/libxdata/world/models/navaids/Fix.h"
 #include "src/Logger.h"
@@ -262,8 +266,42 @@ const std::string& Airport::getMetarTimestamp() const {
     return metarTimestamp;
 }
 
-const std::string& Airport::getMetarString() const {
+const std::string Airport::getMetarString() {
+    try {
+		// Override METAR.rwx with ActiveSky metar api
+		std::string reply;
+		std::string url = "http://localhost:19285/ActiveSky/API/GetMetarInfoAt?ICAO=" + id;
+		bool cancelToken = false;
+        reply = restClient.get(url, cancelToken, 1L);
+		auto t = std::time(nullptr);
+		auto tm = *std::localtime(&t);
+		std::stringstream today;
+		today << std::put_time(&tm, "%Y/%m/%d");
+		metarTimestamp = today.str();
+		return replaceInHg(reply);
+    } catch (const std::exception &e) {
+        logger::error("AviTab API: %s", e.what());
+    }
     return metarString;
+}
+
+#define ROUND_2_INT(f) ((int)(f >= 0.0 ? (f + 0.5) : (f - 0.5)))
+std::string Airport::replaceInHg(const std::string &metar) {
+	std::regex e("\\b(A\\d\\d\\d\\d)");
+	std::smatch m;
+	std::string s = metar;
+	if (std::regex_search(s,m,e)) {
+		std::string inHg;
+		for (auto x:m) inHg = x;
+		double d;
+		if (sscanf(inHg.c_str(), "A%lf", &d) == 1) {
+			double hPa = d * 0.3386389d; // convert inHg to hPa
+			std::stringstream ss;
+			ss << std::setw(4) << std::setfill('0') << ROUND_2_INT(hPa);
+			return std::regex_replace(s,e,"$1 Q" + ss.str()); // insert QNH into string
+		}
+	}
+	return metar;
 }
 
 const Location& Airport::getLocation() const {

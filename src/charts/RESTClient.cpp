@@ -52,6 +52,11 @@ void RESTClient::setBasicAuth(const std::string& basic) {
 }
 
 std::string RESTClient::get(const std::string& url, bool &cancel) {
+	return get(url, cancel, 0L);
+}
+
+std::string RESTClient::get(const std::string& url, bool &cancel, long timeout) {
+	this->timeout = timeout;
     auto bin = getBinary(url, cancel);
     return std::string((const char *) bin.data(), bin.size());
 }
@@ -75,6 +80,11 @@ std::vector<uint8_t> RESTClient::getBinary(const std::string& url, bool& cancel)
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
     }
 
+    if (timeout > 0L) {
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
+		timeout = 0L;  // reset timeout
+    }
+	
     if (!referrer.empty()) {
         curl_easy_setopt(curl, CURLOPT_REFERER, referrer.c_str());
     }
